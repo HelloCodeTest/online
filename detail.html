@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Story - Our Hopeful Story</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: #000;
+      color: #fff;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── nav ── */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 48px;
+      border-bottom: 1px solid #1a1a1a;
+      position: sticky;
+      top: 0;
+      background: #000;
+      z-index: 10;
+      gap: 16px;
+    }
+    .nav-back { font-size: 11px; color: #555; text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; white-space: nowrap; }
+    .nav-back:hover { color: #fff; }
+    .nav-logo { font-size: 13px; font-weight: 700; color: #fff; text-decoration: none; white-space: nowrap; }
+
+    /* ── language select ── */
+    .lang-bar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .lang-btn {
+      font-size: 10px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #444;
+      background: none;
+      border: 0.5px solid #222;
+      border-radius: 12px;
+      padding: 3px 9px;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: color 0.2s, border-color 0.2s;
+      white-space: nowrap;
+    }
+    .lang-btn:hover { color: #fff; border-color: #555; }
+    .lang-btn.active { color: #fff; border-color: #fff; }
+
+    /* ── article ── */
+    .article { max-width: 720px; margin: 0 auto; padding: 72px 48px 60px; }
+
+    .article-header { margin-bottom: 48px; padding-bottom: 40px; border-bottom: 1px solid #1a1a1a; }
+    .article-tag { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #555; margin-bottom: 20px; }
+    .article-title { font-size: 36px; font-weight: 700; color: #fff; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 16px; }
+    .article-subtitle { font-size: 18px; font-weight: 400; color: #666; line-height: 1.5; margin-bottom: 28px; }
+    .article-meta { display: flex; align-items: center; gap: 16px; font-size: 12px; color: #444; }
+    .article-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: #333; flex-shrink: 0; }
+
+    .article-body { display: flex; flex-direction: column; }
+
+    .block-text { font-size: 17px; font-weight: 400; color: #999; line-height: 1.85; letter-spacing: 0.005em; padding: 28px 0; }
+    .block-text + .block-text { padding-top: 0; }
+
+    .block-image { padding: 32px 0; }
+    .block-image img { width: 100%; height: auto; display: block; border-radius: 3px; }
+    .block-image figcaption { font-size: 11px; color: #3a3a3a; text-align: center; margin-top: 12px; letter-spacing: 0.04em; }
+
+    .block-image-duo { padding: 32px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .block-image-duo img { width: 100%; height: auto; display: block; border-radius: 3px; object-fit: cover; }
+    .block-image-duo figcaption { grid-column: 1 / -1; font-size: 11px; color: #3a3a3a; text-align: center; margin-top: 8px; letter-spacing: 0.04em; }
+
+    .block-image-trio { padding: 32px 0; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+    .block-image-trio img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; border-radius: 3px; }
+    .block-image-trio figcaption { grid-column: 1 / -1; font-size: 11px; color: #3a3a3a; text-align: center; margin-top: 8px; letter-spacing: 0.04em; }
+
+    .block-quote { padding: 32px 0 32px 28px; border-left: 2px solid #333; margin: 8px 0; }
+    .block-quote p { font-size: 20px; font-weight: 400; color: #777; line-height: 1.7; font-style: italic; }
+
+    .block-divider { padding: 32px 0; }
+    .block-divider hr { border: none; border-top: 1px solid #1a1a1a; }
+
+    .block-tags { display: flex; flex-wrap: wrap; gap: 8px; padding: 32px 0; }
+    .story-tag { font-size: 11px; color: #555; border: 0.5px solid #2a2a2a; border-radius: 20px; padding: 5px 14px; letter-spacing: 0.04em; transition: border-color 0.2s, color 0.2s; }
+    .story-tag:hover { color: #fff; border-color: #555; }
+
+    .block-sign { padding: 40px 0 0; font-size: 15px; color: #666; line-height: 1.9; }
+    .block-sign strong { color: #888; font-weight: 400; }
+
+    /* RTL support for Arabic */
+    [dir="rtl"] .article { direction: rtl; text-align: right; }
+    [dir="rtl"] .block-quote { border-left: none; border-right: 2px solid #333; padding-left: 0; padding-right: 28px; }
+    [dir="rtl"] .article-meta { flex-direction: row-reverse; }
+
+    /* ── previous/next ── */
+    .pagination { max-width: 720px; margin: 0 auto; display: flex; justify-content: space-between; padding: 48px 48px 80px; border-top: 1px solid #1a1a1a; }
+    .page-link { font-size: 10px; color: #444; text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; display: flex; flex-direction: column; gap: 6px; transition: color 0.2s; }
+    .page-link:hover { color: #fff; }
+    .page-link span { font-size: 14px; color: #777; text-transform: none; letter-spacing: 0; line-height: 1.3; }
+    .page-link.next { text-align: right; }
+    .page-link.hidden { visibility: hidden; pointer-events: none; }
+
+    .not-found { text-align: center; padding: 120px 48px; color: #444; font-size: 14px; }
+
+    @media (max-width: 768px) {
+      .nav { padding: 16px 20px; }
+      .lang-btn { font-size: 9px; padding: 2px 7px; }
+      .article { padding: 40px 24px 60px; }
+      .article-title { font-size: 26px; }
+      .article-subtitle { font-size: 16px; }
+      .block-text { font-size: 16px; }
+      .block-image-duo { grid-template-columns: 1fr; }
+      .block-image-trio { grid-template-columns: 1fr 1fr; }
+      .pagination { padding: 36px 24px 60px; }
+    }
+    @media (max-width: 480px) {
+      .article-title { font-size: 22px; }
+      .block-image-trio { grid-template-columns: 1fr; }
+      .block-image-trio img { aspect-ratio: 4/3; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a class="nav-back" href="index.html">← Back</a>
+    <div class="lang-bar" id="lang-bar"></div>
+    <a class="nav-logo" href="index.html">Our Hopeful Story</a>
+  </nav>
+
+  <div id="content"></div>
+
+  <div class="pagination" id="pagination" style="display:none;">
+    <a class="page-link prev hidden" id="link-prev" href="#">Previous<span></span></a>
+    <a class="page-link next hidden" id="link-next" href="#">Next<span></span></a>
+  </div>
+
+  <script>
+    /* =====================================================
+       언어 설정
+       각 스토리의 i18n 객체에 언어 코드별로 title, subtitle,
+       description 을 입력하면 자동으로 버튼이 생성됩니다.
+
+       블록에서 다국어가 필요한 필드:
+         content, caption — 언어 객체로 작성
+         예) content: { en: "Hello", ko: "안녕하세요", ja: "こんにちは" }
+         이미지 src는 언어 무관하게 공통 사용
+
+       언어 코드: en, ko, es, fr, de, it, pt, ru, ja, zh, ar
+    ===================================================== */
+
+    const LANG_LABELS = {
+      en: 'EN', ko: 'KO', es: 'ES', fr: 'FR', de: 'DE',
+      it: 'IT', pt: 'PT', ru: 'RU', ja: 'JA', zh: 'ZH', ar: 'AR'
+    };
+
+    const stories = [
+      /* ── story 1: Cambodia (English Only) ── */
+      {
+        id: 1,
+        defaultLang: 'en',
+        i18n: {
+          en: {
+            tag: "Cambodia · July 2022",
+            title: "Building Bridges of Hope: Inspiring Encounters with Cambodian Children",
+            subtitle: "Pray for Children in Cambodia",
+            author: "Our Hopeful Story",
+            readTime: "4 min read",
+            date: "Jul 22, 2022"
+          }
+        },
+        blocks: [
+          {
+            type: "text",
+            content: { en: "In July 2022, I had the incredible opportunity to visit Cambodia and spend time with children as part of a mission team. The purpose of our trip was to provide support to those in need, and despite the difficult circumstances they faced — living on a dumpsite, being parentless, and impoverished — the children always had a bright smile on their faces." }
+          },
+          { type: "image", src: "images/story01/dumpsite.webp", alt: "Children in Cambodia (Dumpsite)", caption: { en: "Children in Cambodia (Dumpsite)" } },
+          {
+            type: "duo",
+            images: [
+              { src: "images/story01/facepainting1.webp", alt: "Face Painting 1" },
+              { src: "images/story01/facepainting2.webp", alt: "Face Painting 2" }
+            ],
+            caption: { en: "Face Painting" }
+          },
+          {
+            type: "text",
+            content: { en: "At the beginning, I couldn't understand their language since I was not familiar with it. However, we found ways to connect and bond through dancing, singing songs, and worshiping together in various locations. Even when we couldn't fully understand each other, we communicated through gestures and expressions. Our shared faith in Jesus Christ made it easy for us to sing together, bridging any language barriers that existed." }
+          },
+          { type: "image", src: "images/story01/necklaces.webp", alt: "Making Necklaces", caption: { en: "Making Necklaces with Fruit Rings Cereal" } },
+          {
+            type: "text",
+            content: { en: "During our time together, I had the pleasure of teaching the children how to make necklaces using fruit rings cereals. I became quite popular among them as I distributed the cereal. (It was a moment in which I experienced the universality of capitalism. LOL) The children's smiles and their eyes are what truly stayed with me. As I prepared to leave, they eagerly awaited me in the playground, offering me their heartfelt drawings as a gift. Among the many gifts I've received, these drawings hold a special place in my heart, filling it with love and warmth." }
+          },
+          { type: "image", src: "images/story01/cambodia.webp", alt: "Children in Cambodia", caption: { en: "Children in Cambodia" } },
+          { type: "quote", content: { en: "Working alongside the team dedicated to helping the children in Cambodia has been an immense privilege." } },
+          { type: "image", src: "images/story01/arise.webp", alt: "2022 Arise Shine Cambodia", caption: { en: "" } },
+          {
+            type: "trio",
+            images: [
+              { src: "images/story01/team1.webp", alt: "Team Seoul" },
+              { src: "images/story01/team2.webp", alt: "Team Phnom Penh" },
+              { src: "images/story01/team3.webp", alt: "Team together" }
+            ],
+            caption: { en: "Thank you — Team Cambodia in Seoul and Phnom Penh" }
+          },
+          { type: "text", content: { en: "Naturally, I took on the role of designing various elements for our team. For a long time, I struggled with self-doubt and my relationship with design, particularly after the loss of my older sister. Nevertheless, this experience proved to be the most fulfilling for me as a designer. I am grateful to have found a renewed sense of purpose in my work." } },
+          {
+            type: "duo",
+            images: [
+              { src: "images/story01/girl1.webp", alt: "Cambodian child" },
+              { src: "images/story01/girl2.webp", alt: "Cambodian child" }
+            ],
+            caption: { en: "" }
+          },
+          { type: "text", content: { en: "It felt almost serendipitous to meet these remarkable children. Their clothing, food, and living conditions mattered little in comparison to their precious and radiant spirits. I am genuinely curious about their future, and I am eager to invest in their potential by embarking on a project dedicated to their well-being in the near future." } },
+          { type: "text", content: { en: "Meeting new people has always been one of my favorite ways to gain a deeper understanding of the world. Having the opportunity to connect with the children in Cambodia and our team has been a truly enriching experience. I am committed to using my skills for positive and impactful endeavors, and I look forward to contributing to more meaningful projects in the future." } },
+          { type: "divider" },
+          { type: "sign", content: { en: "I extend my heartfelt gratitude to the Team Cambodia in Seoul and Phnom Penh for their collaboration and support throughout this journey.<br><br><strong>Thank you sincerely,<br>Our Hopeful Story</strong>" } },
+          { type: "tags", items: ["Cambodia", "Volunteering", "Children", "Volunteer", "Design"] }
+        ]
+      },
+
+      /* ── story 2: Golgotha 1 (11 languages) ── */
+
+      
+      {
+        id: 2,
+        defaultLang: 'en',
+        i18n: {
+          en: { tag: "Easter · 2024", title: "Easter", subtitle: "Easter Artwork", author: "Our Hopeful Story", readTime: "", date: "Apr 5, 2024 - Present" },
+          ko: { tag: "부활절 · 2024", title: "부활절", subtitle: "부활절 작품", author: "Our Hopeful Story", readTime: "", date: "Apr 5, 2024 - Present" },
+          es: { tag: "Pascua · 2024", title: "Pascua", subtitle: "Arte de Pascua", author: "Our Hopeful Story", readTime: "", date: "Apr 5, 2024 - Present" },
+          fr: { tag: "Pâques · 2024", title: "Pâques", subtitle: "Art de Pâques", author: "Our Hopeful Story", readTime: "", date: "Apr 5, 2024 - Present" },
+          de: { tag: "Ostern · 2024", title: "Ostern", subtitle: "Osterkunst", author: "Our Hopeful Story", readTime: "", date: "Apr 5, 2024 - Present" },
+          it: { tag: "Pasqua · 2024", title: "Pasqua", subtitle: "Arte di Pasqua", author: "Our Hopeful Story", readTime: "", date: "Apr 5, 2024 - Present" },
+          pt: { tag: "Páscoa · 2024", title: "Páscoa", subtitle: "Arte de Páscoa", author: "Our Hopeful Story", readTime: "", date: "Apr 5, 2024 - Present" },
+          ru: { tag: "Пасха · 2024", title: "Пасха", subtitle: "Пасхальное искусство", author: "Our Hopeful Story", readTime: "", date: "Apr 5, 2024 - Present" },
+          ja: { tag: "イースター · 2024", title: "イースター", subtitle: "イースターアート", author: "Our Hopeful Story", readTime: "", date: "Apr 5, 2024 - Present" },
+          zh: { tag: "复活节 · 2024", title: "复活节", subtitle: "复活节艺术作品", author: "Our Hopeful Story", readTime: "", date: "Apr 5, 2024 - Present" },
+          ar: { tag: "عيد الفصح · 2024", title: "عيد الفصح 2024 ", subtitle: "أعمال فنية لعيد الفصح", author: "Our Hopeful Story", readTime: "", date: "Apr 5, 2024 - Present" }
+        },
+        blocks: [
+          {
+            type: "image",
+            src: "images/story02/golgotha.png",
+            alt: "Golgotha 1",
+            caption: { en: "", ko: "", es: "", fr: "", de: "", it: "", pt: "", ru: "", ja: "", zh: "", ar: "" }
+          },
+          {
+            type: "text",
+            content: {
+              en: 'The title "Golgotha" expresses the hill of Golgotha in an abstract form. The hill, on which the cross stands, is comprised of colorful geometric shapes, representing the path Jesus walked while carrying the cross. The bright colors symbolize the joy of Jesus\' resurrection during Easter and convey a message of finding hope even in dark moments. It is a symbolic expression of the emotional and spiritual journey commemorating Jesus\' resurrection, utilizing vibrant colors to illustrate the contrast between the somber moment of Jesus\' crucifixion and the glorious moment of resurrection.',
+              ko: '"Golgotha"라는 제목으로 골고다의 언덕을 추상적 형태로 표현하고 있습니다. 십자가가 서 있는 언덕은 다채로운 기하학적 모양들로 이루어져 있으며, 이는 예수님이 십자가를 지고 걸었던 길을 나타냅니다. 밝은 색상은 부활절을 통해 예수님의 부활을 기뻐하는 마음을 상징하며, 어두운 순간에도 희망을 찾으려는 메시지를 내포하고 있습니다. 예수님의 슬픔과 부활을 기념하는 감정적이고 영적인 여정을 상징적으로 표현한 것으로, 예수님이 십자가를 지신 슬픈 순간과 부활의 영광스러운 순간 사이의 대비를 생동감 넘치는 색채를 사용하여 나타내고 있습니다.',
+              es: 'Titulado "Gólgota", representa la colina de Gólgota en una forma abstracta. La colina en la que se erige la cruz está compuesta por formas geométricas coloridas, representando el camino que Jesús recorrió mientras cargaba la cruz. Los colores brillantes se utilizan a lo largo de la Pascua. Simboliza la alegría de la resurrección de Jesús y contiene un mensaje de encontrar esperanza incluso en momentos oscuros. Expresa simbólicamente el viaje emocional y espiritual conmemorando el dolor y la resurrección de Jesús, y el momento triste cuando Jesús cargó la cruz. El contraste entre los gloriosos momentos de la resurrección se expresa mediante el uso de colores vibrantes.',
+              fr: 'Intitulé "Golgotha", il dépeint la colline du Golgotha sous une forme abstraite. La colline sur laquelle la croix se tient est composée de formes géométriques colorées, représentant le chemin que Jésus a parcouru en portant la croix. Les couleurs vives sont utilisées tout au long de Pâques. Cela symbolise la joie de la résurrection de Jésus et contient un message de trouver de l\'espoir même dans les moments sombres. Il exprime symboliquement le voyage émotionnel et spirituel commémorant la tristesse et la résurrection de Jésus, et le moment triste où Jésus portait la croix. Le contraste entre les moments glorieux de la résurrection est exprimé à travers l\'utilisation de couleurs vibrantes.',
+              de: 'Betitelt "Golgotha", stellt es den Hügel Golgotha in abstrakter Form dar. Der Hügel, auf dem das Kreuz steht, besteht aus bunten geometrischen Formen, die den Weg darstellen, den Jesus beim Tragen des Kreuzes gegangen ist. Die leuchtenden Farben werden über Ostern verwendet. Es symbolisiert die Freude an Jesu Auferstehung und enthält eine Botschaft, Hoffnung auch in dunklen Momenten zu finden. Es drückt symbolisch die emotionale und spirituelle Reise aus, die die Trauer und Auferstehung Jesu sowie den traurigen Moment, als Jesus das Kreuz trug, gedenkt. Der Kontrast zwischen den glorreichen Momenten der Auferstehung wird durch die Verwendung von lebhaften Farben ausgedrückt.',
+              it: 'Intitolato "Golgota", rappresenta la collina del Golgota in forma astratta. La collina su cui si erge la croce è composta da forme geometriche colorate, rappresentando il percorso che Gesù ha percorso mentre portava la croce. I colori brillanti vengono utilizzati durante la Pasqua. Simboleggia la gioia della resurrezione di Gesù e contiene un messaggio di trovare speranza anche nei momenti bui. Esprime simbolicamente il viaggio emotivo e spirituale che commemora il dolore e la resurrezione di Gesù, e il triste momento in cui Gesù portava la croce. Il contrasto tra i momenti gloriosi della resurrezione è espresso attraverso l\'uso di colori vivaci.',
+              pt: 'Intitulado "Gólgota", retrata a colina do Gólgota de forma abstrata. A colina na qual a cruz está erguida é composta por formas geométricas coloridas, representando o caminho que Jesus percorreu enquanto carregava a cruz. As cores brilhantes são usadas durante a Páscoa. Simboliza a alegria da ressurreição de Jesus e contém uma mensagem de encontrar esperança até mesmo em momentos escuros. Expressa simbolicamente a jornada emocional e espiritual comemorando a tristeza e ressurreição de Jesus, e o momento triste quando Jesus carregou a cruz. O contraste entre os momentos gloriosos da ressurreição é expresso pelo uso de cores vibrantes.',
+              ru: 'Под названием "Голгофа", он изображает холм Голгофы в абстрактной форме. Холм, на котором стоит крест, состоит из цветных геометрических форм, представляющих путь, который Иисус прошел, неся крест. Яркие цвета используются в течение всей Пасхи. Это символизирует радость воскресения Иисуса и содержит сообщение о нахождении надежды даже в темные моменты. Символически выражает эмоциональное и духовное путешествие, вспоминая печаль и воскресение Иисуса, и грустный момент, когда Иисус нес крест. Контраст между славными моментами воскресения выражен с использованием ярких цветов.',
+              ja: '「ゴルゴタ」と題されたこの作品は、ゴルゴタの丘を抽象的な形で描いています。十字架が立つ丘は、イエスが十字架を背負って歩んだ道を表す色とりどりの幾何学的形で構成されています。鮮やかな色彩はイースターを通じて使用されます。それはイエスの復活の喜びを象徴し、暗い瞬間にも希望を見出すメッセージを含んでいます。イエスの悲しみと復活を記念する感情的かつ霊的な旅を象徴的に表現しており、イエスが十字架を背負った悲しい瞬間と復活の栄光の瞬間との対比が、鮮やかな色彩の使用によって表現されています。',
+              zh: '题为"各各他"，它以抽象的形式描绘了各各他的山丘。十字架所立之处的山丘由五彩缤纷的几何形状组成，代表着耶稣背负十字架走过的道路。明亮的颜色在整个复活节期间被使用。它象征着耶稣复活的喜悦，并包含了即使在黑暗时刻也能找到希望的信息。它象征性地表达了纪念耶稣的悲伤和复活的情感与精神之旅，以及耶稣背负十字架的悲伤时刻。通过使用鲜艳的颜色，表达了复活的光荣时刻与悲伤时刻之间的对比。',
+              ar: 'مستخدمة طوال عيد الفصح. ترمز إلى فرحة قيامة يسوع وتحمل رسالة العثور على الأمل حتى في اللحظات المظلمة. يعبر بشكل رمزي عن الرحلة العاطفية والروحية التي تحيي ذكرى حزن وقيامة يسوع، واللحظة الحزينة التي حمل فيها يسوع الصليب. يتم التعبير عن التناقض بين اللحظات المجيدة للقيامة من خلال استخدام الألوان الحية.'
+            }
+          },
+      
+           {
+            type: "image",
+            src: "images/story02/Poem1.jpg",
+            alt: "The flower blooms again",
+            caption: { en: "Easter 2024 : The flower blooms again <br> Poem by Jung Young Mi, Design by Hyunhwa Lee" }
+          },
+          {
+            type: "image",
+            src: "images/story02/Calvary1b.jpg",
+            alt: "Calvary",
+            caption: { en: "Easter 2025 : Calvary" }
+          },
+           {
+            type: "image",
+            src: "images/story02/Poem2a.jpg",
+            alt: "Dawn of resurrection",
+            caption: { en: "Easter 2025 : Dawn of resurrection <br>Poem by Jung Young Mi, Design by Hyunhwa Lee" }
+          },
+           {
+            type: "image",
+            src: "images/story02/Calvary2a2.jpg",
+            alt: "Calvary 2",
+            caption: { en: "Easter 2026 : Calvary 2" }
+          },
+          { type: "divider" },
+          { type: "tags", items: ["Easter", "Poster", "Poem", "Art", "Design"] }
+        ]
+      }
+    ];
+
+    /* ── 텍스트 값 가져오기 (문자열이면 그대로, 객체면 lang 키로) ── */
+    function t(val, lang) {
+      if (!val) return '';
+      if (typeof val === 'string') return val;
+      return val[lang] || val['en'] || '';
+    }
+
+    /* ── 블록 렌더러 ── */
+    function renderBlock(b, lang) {
+      switch (b.type) {
+        case 'text':
+          return `<p class="block-text">${t(b.content, lang)}</p>`;
+        case 'quote':
+          return `<blockquote class="block-quote"><p>${t(b.content, lang)}</p></blockquote>`;
+        case 'divider':
+          return `<div class="block-divider"><hr /></div>`;
+        case 'sign':
+          return `<div class="block-sign">${t(b.content, lang)}</div>`;
+        case 'tags':
+          return `<div class="block-tags">${b.items.map(tag => `<span class="story-tag">${tag}</span>`).join('')}</div>`;
+        case 'image': {
+          const cap = t(b.caption, lang);
+          return `<figure class="block-image">
+            <img src="${b.src}" alt="${b.alt || ''}" />
+            ${cap ? `<figcaption>${cap}</figcaption>` : ''}
+          </figure>`;
+        }
+        case 'duo': {
+          const cap = t(b.caption, lang);
+          return `<figure class="block-image-duo">
+            ${b.images.map(i => `<img src="${i.src}" alt="${i.alt || ''}" />`).join('')}
+            ${cap ? `<figcaption>${cap}</figcaption>` : ''}
+          </figure>`;
+        }
+        case 'trio': {
+          const cap = t(b.caption, lang);
+          return `<figure class="block-image-trio">
+            ${b.images.map(i => `<img src="${i.src}" alt="${i.alt || ''}" />`).join('')}
+            ${cap ? `<figcaption>${cap}</figcaption>` : ''}
+          </figure>`;
+        }
+        default: return '';
+      }
+    }
+
+    /* ── 아티클 렌더링 ── */
+    function renderStory(story, lang) {
+      const meta = story.i18n[lang] || story.i18n[story.defaultLang] || story.i18n['en'];
+      const isRtl = lang === 'ar';
+      return `
+        <article class="article" ${isRtl ? 'dir="rtl"' : ''}>
+          <header class="article-header">
+            ${meta.tag ? `<p class="article-tag">${meta.tag}</p>` : ''}
+            <h1 class="article-title">${meta.title}</h1>
+            ${meta.subtitle ? `<p class="article-subtitle">${meta.subtitle}</p>` : ''}
+            <div class="article-meta">
+              <span>${meta.author || 'Our Hopeful Story'}</span>
+              ${meta.readTime ? `<div class="dot"></div><span>${meta.readTime}</span>` : ''}
+              ${meta.date ? `<div class="dot"></div><span>${meta.date}</span>` : ''}
+            </div>
+          </header>
+          <div class="article-body">
+            ${story.blocks.map(b => renderBlock(b, lang)).join('')}
+          </div>
+        </article>`;
+    }
+
+    /* ── 언어 버튼 빌드 ── */
+    function buildLangBar(story, currentLang) {
+      const bar = document.getElementById('lang-bar');
+      const langs = Object.keys(story.i18n);
+      if (langs.length <= 1) { bar.style.display = 'none'; return; }
+      bar.innerHTML = langs.map(code => {
+        const active = code === currentLang ? 'active' : '';
+        return `<button class="lang-btn ${active}" onclick="switchLang('${code}')">${LANG_LABELS[code] || code.toUpperCase()}</button>`;
+      }).join('');
+    }
+
+    /* ── 언어 전환 ── */
+    function switchLang(lang) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', lang);
+      window.history.replaceState({}, '', url);
+      const storyId = parseInt(url.searchParams.get('id')) || 1;
+      const story = stories.find(s => s.id === storyId);
+      if (!story) return;
+      document.getElementById('content').innerHTML = renderStory(story, lang);
+      buildLangBar(story, lang);
+    }
+
+    /* ── 메인 ── */
+    const params = new URLSearchParams(window.location.search);
+    const id = parseInt(params.get('id')) || 1;
+    const lang = params.get('lang') || null;
+    const idx = stories.findIndex(s => s.id === id);
+    const story = stories[idx];
+    const content = document.getElementById('content');
+    const pagination = document.getElementById('pagination');
+
+    if (!story) {
+      content.innerHTML = `<div class="not-found">스토리를 찾을 수 없습니다. <a href="index.html" style="color:#666">← 목록으로</a></div>`;
+    } else {
+      const activeLang = lang || story.defaultLang || 'en';
+      document.title = `${(story.i18n[activeLang] || story.i18n['en']).title} — Our Hopeful Story`;
+      content.innerHTML = renderStory(story, activeLang);
+      buildLangBar(story, activeLang);
+
+      const prev = stories[idx - 1] || null;
+      const next = stories[idx + 1] || null;
+      const prevEl = document.getElementById('link-prev');
+      const nextEl = document.getElementById('link-next');
+
+      if (prev) {
+        prevEl.href = `detail.html?id=${prev.id}&lang=${activeLang}`;
+        prevEl.innerHTML = `Previous<span>${(prev.i18n[activeLang] || prev.i18n['en']).title}</span>`;
+        prevEl.classList.remove('hidden');
+      }
+      if (next) {
+        nextEl.href = `detail.html?id=${next.id}&lang=${activeLang}`;
+        nextEl.innerHTML = `Next<span>${(next.i18n[activeLang] || next.i18n['en']).title}</span>`;
+        nextEl.classList.remove('hidden');
+      }
+      pagination.style.display = 'flex';
+    }
+     /* ── 저작권 보호 JS ── */
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+      const blocked =
+        ((e.ctrlKey || e.metaKey) && ['s','c','u','p','a'].includes(e.key.toLowerCase())) ||
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(e.key.toLowerCase()));
+      if (blocked) e.preventDefault();
+    });
+    document.addEventListener('dragstart', e => e.preventDefault());
+    console.log('%c© Our Hopeful Story — All rights reserved.', 'color:#fff;background:#000;font-size:14px;padding:8px 16px;');
+  </script>
+
+</body>
+</html>
